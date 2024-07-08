@@ -1,14 +1,13 @@
 import jax
 import jax.numpy as jnp
 from flowMC.nfmodel.rqSpline import MaskedCouplingRQSpline
-# from flowMC.proposal.MALA import MALA  # 原来的
-from src.libs.newMALA import MALA
+from flowMC.proposal.MALA import MALA
 from flowMC.Sampler import Sampler
 from flowMC.utils.EvolutionaryOptimizer import EvolutionaryOptimizer
 from jaxtyping import Array, Float, PRNGKeyArray
 
-from src.jimgw.base import LikelihoodBase
-from src.jimgw.prior import Prior
+from jimgw.base import LikelihoodBase
+from jimgw.prior import Prior
 
 
 class Jim(object):
@@ -31,8 +30,6 @@ class Jim(object):
         local_sampler_arg = kwargs.get("local_sampler_arg", {})
 
         local_sampler = MALA(self.posterior, True, **local_sampler_arg)
-
-
 
         rng_key, subkey = jax.random.split(rng_key)
         model = MaskedCouplingRQSpline(

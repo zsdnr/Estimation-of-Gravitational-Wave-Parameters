@@ -10,8 +10,8 @@ from beartype import beartype as typechecker
 from scipy.interpolate import interp1d
 from scipy.signal.windows import tukey
 
-from src.jimgw.constants import C_SI, EARTH_SEMI_MAJOR_AXIS, EARTH_SEMI_MINOR_AXIS
-from src.jimgw.single_event.wave import Polarization
+from jimgw.constants import C_SI, EARTH_SEMI_MAJOR_AXIS, EARTH_SEMI_MINOR_AXIS
+from jimgw.single_event.wave import Polarization
 
 DEG_TO_RAD = jnp.pi / 180
 
@@ -271,13 +271,9 @@ class GroundBased2G(Detector):
         """
         Modulate the waveform in the sky frame by the detector response in the frequency domain.
         """
-        print("in fd_response")
         ra, dec, psi, gmst = params["ra"], params["dec"], params["psi"], params["gmst"]
-        # print("参数1", "ra", jax.device_get(ra), "dec", jax.device_get(dec), "psi", jax.device_get(psi), "gmst", jax.device_get(gmst))
-        antenna_pattern = self.antenna_pattern(ra, dec, psi, gmst)  # 计算指定天空位置、方向和GMST处的｛modes｝极化的｛name｝天线方向图。在长波近似中，给定极化的天线方向图是探测器张量和相应极化张量之间的并矢乘积。
-        # print("参数2", jax.device_get(antenna_pattern))
-        timeshift = self.delay_from_geocenter(ra, dec, gmst)  # 基于TimeDelay.c中的XLALArrivaTimeDiff计算地心坐标下两个探测器之间的时延
-        # print("参数3", jax.device_get(timeshift))
+        antenna_pattern = self.antenna_pattern(ra, dec, psi, gmst)
+        timeshift = self.delay_from_geocenter(ra, dec, gmst)
         h_detector = jax.tree_util.tree_map(
             lambda h, antenna: h
             * antenna
@@ -285,7 +281,6 @@ class GroundBased2G(Detector):
             h_sky,
             antenna_pattern,
         )
-        # print("参数4", jax.device_get(h_detector))
         return jnp.sum(jnp.stack(jax.tree_util.tree_leaves(h_detector)), axis=0)
 
     def td_response(
@@ -298,7 +293,6 @@ class GroundBased2G(Detector):
         """
         Modulate the waveform in the sky frame by the detector response in the time domain.
         """
-        print("in td_response")
         raise NotImplementedError
 
     def delay_from_geocenter(self, ra: Float, dec: Float, gmst: Float) -> Float:

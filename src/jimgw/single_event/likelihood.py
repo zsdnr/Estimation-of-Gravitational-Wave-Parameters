@@ -3,18 +3,17 @@ import jax.numpy as jnp
 import numpy as np
 import numpy.typing as npt
 from astropy.time import Time
-# from flowMC.strategy.optimization import optimization_Adam  # 原来的
-from src.libs.optimization_modified import optimization_Adam
+from flowMC.strategy.optimization import optimization_Adam
 from jax.scipy.special import logsumexp
 from jaxtyping import Array, Float
 from typing import Optional
 from scipy.interpolate import interp1d
 
-from src.jimgw.base import LikelihoodBase
-from src.jimgw.prior import Prior
-from src.jimgw.single_event.detector import Detector
-from src.jimgw.single_event.utils import log_i0
-from src.jimgw.single_event.waveform import Waveform
+from jimgw.base import LikelihoodBase
+from jimgw.prior import Prior
+from jimgw.single_event.detector import Detector
+from jimgw.single_event.utils import log_i0
+from jimgw.single_event.waveform import Waveform
 
 
 class SingleEventLiklihood(LikelihoodBase):
@@ -255,15 +254,13 @@ class HeterodynedTransientLikelihoodFD(TransientLikelihoodFD):
         )
         self.freq_grid_low = freq_grid[:-1]
 
-        print("ref_params 1", ref_params)
         if not ref_params:
             print("No reference parameters are provided, finding it...")
             ref_params = self.maximize_likelihood(
                 bounds=bounds, prior=prior, popsize=popsize, n_steps=n_steps
             )
-            print("ref_params 2", ref_params)
             self.ref_params = {key: float(value) for key, value in ref_params.items()}
-            print(f"The reference parameters are {self.ref_params}")   # The reference parameters are {'M_c': nan, 'eta': nan, 's1_z': nan, 's2_z': nan, 'd_L': nan, 't_c': nan, 'phase_c': nan, 'iota': nan, 'psi': nan, 'ra': nan, 'dec': nan}
+            print(f"The reference parameters are {self.ref_params}")
         else:
             self.ref_params = ref_params
             print(f"Reference parameters provided, which are {self.ref_params}")
@@ -282,7 +279,6 @@ class HeterodynedTransientLikelihoodFD(TransientLikelihoodFD):
         self.ref_params = self.param_func(self.ref_params)
         # adjust the params due to fixing parameters
         self.ref_params = self.fixing_func(self.ref_params)
-        print("self.ref_params:", self.ref_params)
 
         self.waveform_low_ref = {}
         self.waveform_center_ref = {}
@@ -292,16 +288,13 @@ class HeterodynedTransientLikelihoodFD(TransientLikelihoodFD):
         self.B1_array = {}
 
         h_sky = reference_waveform(frequency_original, self.ref_params)
-        print("h_sky",h_sky)
+
         # Get frequency masks to be applied, for both original
         # and heterodyne frequency grid
-        # 获取要应用的频率掩码，用于原始和外差频率网格
         h_amp = jnp.sum(
             jnp.array([jnp.abs(h_sky[key]) for key in h_sky.keys()]), axis=0
         )
-        print("h_amp", h_amp)
         f_valid = frequency_original[jnp.where(h_amp > 0)[0]]
-        print("f_valid", f_valid)
         f_max = jnp.max(f_valid)
         f_min = jnp.min(f_valid)
 
@@ -331,7 +324,6 @@ class HeterodynedTransientLikelihoodFD(TransientLikelihoodFD):
             * frequency_original
             * (self.epoch + self.ref_params["t_c"])
         )
-        print("align_time", align_time)
         align_time_low = jnp.exp(
             -1j
             * 2
@@ -339,7 +331,6 @@ class HeterodynedTransientLikelihoodFD(TransientLikelihoodFD):
             * self.freq_grid_low
             * (self.epoch + self.ref_params["t_c"])
         )
-        print("align_time_low", align_time_low)
         align_time_center = jnp.exp(
             -1j
             * 2
@@ -347,33 +338,23 @@ class HeterodynedTransientLikelihoodFD(TransientLikelihoodFD):
             * self.freq_grid_center
             * (self.epoch + self.ref_params["t_c"])
         )
-        print("align_time", align_time)
-        print("align_time_low", align_time_low)
-        print("align_time_center", align_time_center)
-        print("frequency_original", frequency_original)
-        print("self.freq_grid_low", self.freq_grid_low)
-        print("self.freq_grid_center", self.freq_grid_center)
-        print("h_sky_low", h_sky_low)
-        print("h_sky_center", h_sky_center)
+
         for detector in self.detectors:
             # Get the reference waveforms
             waveform_ref = (
                 detector.fd_response(frequency_original, h_sky, self.ref_params)
                 * align_time
-            )  # 这里出现nan值--------------------------------------------------------------------------------------------
+            )
             self.waveform_low_ref[detector.name] = (
                 detector.fd_response(self.freq_grid_low, h_sky_low, self.ref_params)
                 * align_time_low
-            )  # 这里出现nan值--------------------------------------------------------------------------------------------
+            )
             self.waveform_center_ref[detector.name] = (
                 detector.fd_response(
                     self.freq_grid_center, h_sky_center, self.ref_params
-                )  # 这里出现nan值----------------------------------------------------------------------------------------
+                )
                 * align_time_center
-            )  # 这里出现nan值--------------------------------------------------------------------------------------------
-            print("waveform_ref", waveform_ref)
-            print("self.waveform_low_ref", self.waveform_low_ref)
-            print("self.waveform_center_ref", self.waveform_center_ref)
+            )
             A0, A1, B0, B1 = self.compute_coefficients(
                 detector.data,
                 waveform_ref,
@@ -577,10 +558,8 @@ class HeterodynedTransientLikelihoodFD(TransientLikelihoodFD):
         ).T
         rng_key, optimized_positions, summary = optimizer.optimize(
             jax.random.PRNGKey(12094), y, initial_position
-        )  # 这里出现nan值------------------------------------------------------------------------------------------------
-        print("summary", summary)
+        )
         best_fit = optimized_positions[summary["final_log_prob"].argmin()]
-        print("best_fit", best_fit)
         return prior.transform(prior.add_name(best_fit))
 
 
