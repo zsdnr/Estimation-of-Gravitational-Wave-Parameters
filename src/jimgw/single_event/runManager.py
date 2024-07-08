@@ -9,12 +9,12 @@ from astropy.time import Time
 from jaxlib.xla_extension import ArrayImpl
 from jaxtyping import Array, Float, PyTree
 
-from jimgw import prior
-from jimgw.base import RunManager
-from jimgw.jim import Jim
-from jimgw.single_event.detector import Detector, detector_preset
-from jimgw.single_event.likelihood import SingleEventLiklihood, likelihood_presets
-from jimgw.single_event.waveform import Waveform, waveform_preset
+from src.jimgw import prior
+from src.jimgw.base import RunManager
+from src.jimgw.jim import Jim
+from src.jimgw.single_event.detector import Detector, detector_preset
+from src.jimgw.single_event.likelihood import SingleEventLiklihood, likelihood_presets
+from src.jimgw.single_event.waveform import Waveform, waveform_preset
 
 
 def jaxarray_representer(dumper: yaml.Dumper, data: ArrayImpl):
@@ -330,12 +330,14 @@ class SingleEventPERunManager(RunManager):
         plt.figure()
         for detector in self.jim.Likelihood.detectors:  # type: ignore
             plt.loglog(
-                detector.freqs,
+                # detector.freqs,  # 原来的
+                detector.frequencies,
                 jnp.abs(detector.data),
                 label=detector.name + " (data)",
             )
             plt.loglog(
-                detector.freqs,
+                # detector.freqs,  # 原来的
+                detector.frequencies,
                 jnp.sqrt(jnp.abs(detector.psd)),
                 label=detector.name + " (PSD)",
             )

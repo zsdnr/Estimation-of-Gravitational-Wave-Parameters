@@ -1,14 +1,13 @@
 import jax
 import jax.numpy as jnp
 from flowMC.nfmodel.rqSpline import MaskedCouplingRQSpline
-# from flowMC.proposal.MALA import MALA
-from src.libs.newMALAnew import MALA
+from flowMC.proposal.MALA import MALA
 from flowMC.Sampler import Sampler
 from flowMC.utils.EvolutionaryOptimizer import EvolutionaryOptimizer
 from jaxtyping import Array, Float, PRNGKeyArray
 
-from src.jimgw.base import LikelihoodBase
-from src.jimgw.prior import Prior
+from jimgw.base import LikelihoodBase
+from jimgw.prior import Prior
 
 
 class Jim(object):

@@ -10,8 +10,8 @@ from beartype import beartype as typechecker
 from scipy.interpolate import interp1d
 from scipy.signal.windows import tukey
 
-from jimgw.constants import C_SI, EARTH_SEMI_MAJOR_AXIS, EARTH_SEMI_MINOR_AXIS
-from jimgw.single_event.wave import Polarization
+from src.jimgw.constants import C_SI, EARTH_SEMI_MAJOR_AXIS, EARTH_SEMI_MINOR_AXIS
+from src.jimgw.single_event.wave import Polarization
 
 DEG_TO_RAD = jnp.pi / 180
 
@@ -419,6 +419,7 @@ class GroundBased2G(Detector):
     def load_psd(
         self, freqs: Float[Array, " n_sample"], psd_file: str = ""
     ) -> Float[Array, " n_sample"]:
+        print("psd_file",psd_file)
         if psd_file == "":
             print("Grabbing GWTC-2 PSD for " + self.name)
             url = asd_file_dict[self.name]

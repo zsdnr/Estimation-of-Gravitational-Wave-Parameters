@@ -4,11 +4,11 @@ p.cpu_affinity([0])
 import os 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.10"
-from jimgw.jim import Jim
-from jimgw.single_event.detector import H1, L1, V1
-from jimgw.single_event.likelihood import HeterodynedTransientLikelihoodFD
-from jimgw.single_event.waveform import RippleIMRPhenomD_NRTidalv2
-from jimgw.prior import Uniform, Composite 
+from src.jimgw.jim import Jim
+from src.jimgw.single_event.detector import H1, L1, V1
+from src.jimgw.single_event.likelihood import HeterodynedTransientLikelihoodFD
+from src.jimgw.single_event.waveform import RippleIMRPhenomD_NRTidalv2
+from src.jimgw.prior import Uniform, Composite
 import jax.numpy as jnp
 import jax
 import time

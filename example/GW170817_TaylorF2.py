@@ -4,11 +4,11 @@ p.cpu_affinity([0])
 import os 
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.10"
-from jimgw.jim import Jim
-from jimgw.single_event.detector import H1, L1, V1
-from jimgw.single_event.likelihood import HeterodynedTransientLikelihoodFD
-from jimgw.single_event.waveform import RippleTaylorF2
-from jimgw.prior import Uniform, Composite 
+from src.jimgw.jim import Jim
+from src.jimgw.single_event.detector import H1, L1, V1
+from src.jimgw.single_event.likelihood import HeterodynedTransientLikelihoodFD
+from src.jimgw.single_event.waveform import RippleTaylorF2
+from src.jimgw.prior import Uniform, Composite
 import jax.numpy as jnp
 import jax
 import time
@@ -26,7 +26,9 @@ import utils_plotting as utils
 ### PREAMBLE ###
 ################
 
-data_path = "/home/thibeau.wouters/gw-datasets/GW170817/" # this is on the CIT cluster # TODO: has to be shared externally!
+# data_path = "/home/thibeau.wouters/gw-datasets/GW170817/" # this is on the CIT cluster # TODO: has to be shared externally!  # 原来的
+
+data_path = "C:/Users/admin/Desktop/引力波/新任务/jim-main/GW170817_data/"
 
 start_runtime = time.time()
 
@@ -63,10 +65,15 @@ V1_data_re, V1_data_im = jnp.array(np.genfromtxt(f'{data_path}V1_data_re.txt')),
 V1.data = V1_data_re + 1j * V1_data_im
 
 # Load the PSD
-
-H1.psd = H1.load_psd(H1.frequencies, psd_file = data_path + "GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle_H1_psd.txt")
-L1.psd = L1.load_psd(L1.frequencies, psd_file = data_path + "GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle_L1_psd.txt")
-V1.psd = V1.load_psd(V1.frequencies, psd_file = data_path + "GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle_V1_psd.txt")
+# H1.psd = H1.load_psd(H1.frequencies, psd_file = data_path + "GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle_H1_psd.txt")  # 原来的
+# L1.psd = L1.load_psd(L1.frequencies, psd_file = data_path + "GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle_L1_psd.txt")  # 原来的
+# V1.psd = V1.load_psd(V1.frequencies, psd_file = data_path + "GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle_V1_psd.txt")  # 原来的
+H1.psd = H1.load_psd(H1.frequencies, psd_file = data_path + "H1.txt")
+L1.psd = L1.load_psd(L1.frequencies, psd_file = data_path + "L1.txt")
+V1.psd = V1.load_psd(V1.frequencies, psd_file = data_path + "V1.txt")
+# H1.psd = H1.load_psd(H1.frequencies, psd_file="")
+# L1.psd = L1.load_psd(L1.frequencies, psd_file="")
+# V1.psd = V1.load_psd(V1.frequencies, psd_file="")
 
 ### Define priors
 
@@ -134,7 +141,7 @@ prior = Composite(prior_list)
 
 # The following only works if every prior has xmin and xmax property, which is OK for Uniform and Powerlaw
 bounds = jnp.array([[p.xmin, p.xmax] for p in prior.priors])
-
+print("bounds", bounds)
 ### Create likelihood object
 
 # For simplicity, we put here a set of reference parameters found by the optimizer

@@ -65,4 +65,6 @@ true_param = np.stack(true_param)
 mean_global_accs = np.stack(mean_global_accs)
 mean_local_accs = np.stack(mean_local_accs)
 
-np.savez('/mnt/home/wwong/ceph/GWProject/JaxGW/RealtimePE/ppPlots/combined_quantile_balance_LVK',result=result, result_multimodal=result_multimodal, true_param=true_param, mean_global_accs=mean_global_accs, mean_local_accs= mean_local_accs)
+# np.savez('/mnt/home/wwong/ceph/GWProject/JaxGW/RealtimePE/ppPlots/combined_quantile_balance_LVK',
+#          result=result, result_multimodal=result_multimodal, true_param=true_param, mean_global_accs=mean_global_accs, mean_local_accs= mean_local_accs)  # 原来
+np.savez('C:/Users/admin\Desktop/引力波/新任务/jim-main/src/plot/combined_quantile_balance_LVK',result=result, result_multimodal=result_multimodal, true_param=true_param, mean_global_accs=mean_global_accs, mean_local_accs= mean_local_accs)

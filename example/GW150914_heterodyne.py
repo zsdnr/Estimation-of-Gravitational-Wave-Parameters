@@ -3,14 +3,14 @@ import time
 import jax
 import jax.numpy as jnp
 
-from jimgw.jim import Jim
-from jimgw.prior import Composite, Unconstrained_Uniform
-from jimgw.single_event.detector import H1, L1
-from jimgw.single_event.likelihood import (
+from src.jimgw.jim import Jim
+from src.jimgw.prior import Composite, Unconstrained_Uniform
+from src.jimgw.single_event.detector import H1, L1
+from src.jimgw.single_event.likelihood import (
     HeterodynedTransientLikelihoodFD,
     TransientLikelihoodFD,
 )
-from jimgw.single_event.waveform import RippleIMRPhenomD
+from src.jimgw.single_event.waveform import RippleIMRPhenomD
 from flowMC.strategy.optimization import optimization_Adam
 
 jax.config.update("jax_enable_x64", True)

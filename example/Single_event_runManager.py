@@ -1,9 +1,8 @@
-
 import jax
 import jax.numpy as jnp
 
-from jimgw.single_event.runManager import (SingleEventPERunManager,
-                                           SingleEventRun)
+from src.jimgw.single_event.runManager import (SingleEventPERunManager,
+                                               SingleEventRun)
 
 jax.config.update("jax_enable_x64", True)
 
@@ -27,7 +26,6 @@ bounds = jnp.array(
         [-1.0, 1.0],
     ]
 )
-
 
 run = SingleEventRun(
     seed=0,
@@ -91,3 +89,36 @@ run = SingleEventRun(
 )
 
 run_manager = SingleEventPERunManager(run=run)
+
+# 新加的
+posterior_samples = run_manager.jim.sample(jax.random.PRNGKey(42))
+run_manager.jim.print_summary()
+run_manager.plot_injection_waveform("C:/Users/admin\Desktop/引力波/新任务/jim-main/src/plot/plot_injection_waveform")
+run_manager.plot_data("C:/Users/admin\Desktop/引力波/新任务/jim-main/src/plot/plot_data")
+
+# print("posterior_samples:", posterior_samples)
+# # 将列表中的 None 值替换为 0
+# posterior_samples = [0 if x is None else x for x in posterior_samples]
+# # 确保posterior_samples是numpy数组
+# posterior_samples = jnp.array(posterior_samples)
+# # 这两行代码的作用是过滤掉 posterior_samples 数组中的 NaN 和 inf 值，确保数组中只包含有效的数值，以便后续的处理和绘图。
+# # posterior_samples = posterior_samples[~jnp.isnan(posterior_samples)]
+# # posterior_samples = posterior_samples[~jnp.isinf(posterior_samples)]
+# # 将 posterior_samples 数组中的 NaN 值替换为0
+# posterior_samples = jnp.where(jnp.isnan(posterior_samples), 0, posterior_samples)
+# # 将 posterior_samples 数组中的 inf 值替换为0
+# # posterior_samples = jnp.where(jnp.isinf(posterior_samples), 0, posterior_samples)
+# # 将数组中的所有正无穷值（inf）替换为0。jnp.isposinf 函数用于检测正无穷值。
+# posterior_samples = jnp.where(jnp.isposinf(posterior_samples), 1, posterior_samples)
+# # 将数组中的所有负无穷值（-inf）替换为0。jnp.isneginf 函数用于检测负无穷值。
+# posterior_samples = jnp.where(jnp.isneginf(posterior_samples), -1, posterior_samples)
+#
+#
+#
+# # 生成图表
+# import matplotlib.pyplot as plt
+# plt.hist(posterior_samples, bins=50, density=True, alpha=0.7)
+# plt.title("Posterior Distribution of Chirp Mass M_c")
+# plt.xlabel("Chirp Mass [M_sun]")
+# plt.ylabel("Probability Density")
+# plt.show()
